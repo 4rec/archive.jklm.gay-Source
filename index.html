@@ -4,55 +4,83 @@
     <title>ArchiveJKLM - Random Audio Player</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
+        :root {
+            --text: rgba(161, 98, 130);
+            --links: rgb(255, 102, 180);
+            --shift: rgb(255, 196, 226);
+            --borders: rgba(51, 15, 33);
+            --background: #0a0005;
+            --shadow: rgb(166, 71, 126);
+            --dark-bg: #1a000d;
+        }
         body {
-            background-color: #000000;
-            color: #CCCCCC;
-            font-family: Arial, Helvetica, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
+            background-color: var(--background);
             background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAB2SURBVHja7M4xDQAgDAAxwMedoPofCqkIyoC6MEHXJsmTzLkAwwJYEVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZQEAwxcQlOcAAAAASUVORK5CYII=');
+            color: #CCCCCC;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 90%;
+            text-shadow: 2px 2px 3px #000000;
+            overflow: hidden;
+            height: 100vh;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 120%;
+            color: var(--links) !important;
+            text-shadow: 2px 2px 3px black, 0 0 25px darkred, 0 0 5px #000000;
+            margin: 5px 0;
         }
         #container {
-            width: 800px;
-            margin: 0 auto;
-            border: 1px solid #FF0000;
-            background-color: #111111;
-            padding: 20px;
+            width: 100%;
+            height: 98vh;
+            display: grid;
+            grid-template-columns: 30% 70%;
+            grid-template-rows: auto 1fr;
+            gap: 10px;
+            box-sizing: border-box;
         }
-        h1 {
-            color: #FF0000;
-            font-size: 28px;
+        #header {
+            grid-column: 1 / span 2;
             text-align: center;
-            text-shadow: 0 0 5px #FF0000;
+            padding: 5px;
+            background-color: var(--dark-bg);
+            border: 2px solid var(--borders);
+            border-radius: 5px;
+            box-shadow: 0 0 10px var(--shadow);
+        }
+        #sidebar {
+            padding: 10px;
+            background-color: var(--dark-bg);
+            border: 2px solid var(--borders);
+            border-radius: 5px;
+            box-shadow: 0 0 10px var(--shadow);
+            overflow-y: auto;
+        }
+        #player-container {
+            padding: 10px;
+            background-color: var(--dark-bg);
+            border: 2px solid var(--borders);
+            border-radius: 5px;
+            box-shadow: 0 0 10px var(--shadow);
+            display: flex;
+            flex-direction: column;
         }
         #status {
             text-align: center;
-            padding: 10px;
-            margin: 10px 0;
+            padding: 5px;
+            margin: 5px 0;
             background-color: #220000;
-            border: 1px solid #FF0000;
+            border: 1px solid var(--borders);
+            border-radius: 3px;
+            font-size: 12px;
         }
         #player {
-            width: 400px;
-            margin: 0 auto;
-            padding: 10px;
-            background-color: #222222;
-            border: 2px solid #FF0000;
-        }
-        #controls {
-            text-align: center;
-            margin-top: 20px;
-        }
-        button {
-            background-color: #330000;
-            color: #FFCCCC;
-            border: 1px solid #FF0000;
-            padding: 5px 10px;
-            margin: 0 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #550000;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         #trackInfo {
             text-align: center;
@@ -60,23 +88,104 @@
             font-size: 14px;
             height: 40px;
             overflow: hidden;
-        }
-        #options {
-            margin-top: 20px;
-            padding: 10px;
             background-color: #220000;
-            border: 1px solid #FF0000;
+            border: 1px solid var(--borders);
+            border-radius: 3px;
+            padding: 5px;
         }
-        #options h3 {
-            color: #FF0000;
-            margin-top: 0;
-        }
-        #filters {
-            width: 100%;
+        #visualizer {
             height: 100px;
-            background-color: #111111;
-            color: #CCCCCC;
-            border: 1px solid #FF0000;
+            background-color: #110000;
+            border: 1px solid var(--borders);
+            border-radius: 3px;
+            margin: 10px 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 5px;
+        }
+        .bar {
+            width: 8px;
+            background-color: var(--links);
+            margin: 0 2px;
+            height: 10px;
+        }
+        #controls {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #330000;
+            color: var(--links);
+            border: 1px solid var(--borders);
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            border-radius: 3px;
+        }
+        button:hover {
+            background-color: #550000;
+            box-shadow: 0 0 7px var(--shadow);
+            color: red;
+        }
+        #volume-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        #volume {
+            width: 70%;
+            margin: 0 10px;
+        }
+        .section {
+            margin-bottom: 15px;
+            padding: 8px;
+            background-color: #220000;
+            border: 1px solid var(--borders);
+            border-radius: 3px;
+        }
+        .section h3 {
+            margin-top: 0;
+            border-bottom: 1px solid var(--borders);
+            padding-bottom: 5px;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #110000;
+            color: var(--text);
+            border: 1px solid var(--borders);
+            padding: 3px;
+            margin: 5px 0;
+            font-family: 'Orbitron', sans-serif;
+        }
+        input[type="text"]:hover, textarea:hover {
+            box-shadow: 0px 0px 7px var(--shadow);
+        }
+        #searchResults {
+            position: absolute;
+            background-color: #220000;
+            border: 1px solid var(--borders);
+            max-height: 150px;
+            overflow-y: auto;
+            width: 300px;
+            z-index: 100;
+            display: none;
+        }
+        .search-result {
+            padding: 5px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--borders);
+        }
+        .search-result:hover {
+            background-color: #550000;
         }
         .marquee {
             width: 100%;
@@ -93,40 +202,136 @@
             0%   { transform: translate(0, 0); }
             100% { transform: translate(-100%, 0); }
         }
-        #volume {
+        .snowflakes {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .snowflake {
+            position: fixed;
+            color: var(--shadow);
+            font-size: 16px;
+            z-index: -1;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            cursor: default;
+            animation-name: snowflakes-fall, snowflakes-shake;
+            animation-duration: 10s, 3s;
+            animation-timing-function: linear, ease-in-out;
+            animation-iteration-count: infinite, infinite;
+            animation-play-state: running, running;
+        }
+        @keyframes snowflakes-fall {
+            0% { top: -10%; }
+            100% { top: 100%; }
+        }
+        @keyframes snowflakes-shake {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(80px); }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
 </head>
 <body>
+    <div class="snowflakes">
+        <div class="snowflake">🏮</div>
+        <div class="snowflake">🏮</div>
+        <div class="snowflake">🏮</div>
+        <div class="snowflake">🏮</div>
+        <div class="snowflake">🏮</div>
+        <div class="snowflake">🏮</div>
+        <div class="snowflake">🏮</div>
+        <div class="snowflake">🏮</div>
+        <div class="snowflake">🏮</div>
+        <div class="snowflake">🏮</div>
+    </div>
+
     <div id="container">
-        <h1>ArchiveJKLM Audio Player</h1>
+        <div id="header">
+            <h1>ArchiveJKLM Audio Player</h1>
+            <div id="status">Loading songs...</div>
+        </div>
         
-        <div id="status">Loading songs...</div>
-        
-        <div id="player">
-            <div id="trackInfo">
-                <div class="marquee"><span>No track selected</span></div>
+        <div id="sidebar">
+            <div class="section">
+                <h3>Filter Options</h3>
+                <div>
+                    <label for="searchPath">Search Paths:</label>
+                    <input type="text" id="searchPath" placeholder="Type to search paths" />
+                    <div id="searchResults"></div>
+                </div>
+                <div>
+                    <label for="filters">Include Paths (one per line):</label>
+                    <textarea id="filters" rows="3">1000+</textarea>
+                </div>
+                <button id="addCurrentPath">Add Current Folder</button>
+                <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                    <button id="onlyFiltered">Only Included</button>
+                    <button id="onlyNotFiltered">Only Not Included</button>
+                </div>
+                <button id="applyFilters">Apply Filters</button>
             </div>
-            <audio id="audioPlayer" controls style="width: 100%;"></audio>
-            <div id="controls">
-                <button id="prevBtn">Previous</button>
-                <button id="playPauseBtn">Play</button>
-                <button id="nextBtn">Next</button>
-                <button id="downloadBtn">Download</button>
+            
+            <div class="section">
+                <h3>Length Filter</h3>
+                <div>
+                    <label for="minLength">Min Length (seconds):</label>
+                    <input type="text" id="minLength" placeholder="0" />
+                </div>
+                <div>
+                    <label for="maxLength">Max Length (seconds):</label>
+                    <input type="text" id="maxLength" placeholder="9999" />
+                </div>
             </div>
-            <div>
-                <label for="volume">Volume:</label>
-                <input type="range" id="volume" min="0" max="1" step="0.1" value="0.8">
+            
+            <div class="section">
+                <h3>Playback History</h3>
+                <div id="historyList" style="max-height: 150px; overflow-y: auto;">
+                    No history yet
+                </div>
             </div>
         </div>
         
-        <div id="options">
-            <h3>Filter Options</h3>
-            <p>Exclude paths (one per line):</p>
-            <textarea id="filters">1000+</textarea>
-            <button id="applyFilters">Apply Filters</button>
-            <button id="toggleRandom">Only Play Filtered</button>
+        <div id="player-container">
+            <div id="player">
+                <div id="trackInfo">
+                    <div class="marquee"><span>No track selected</span></div>
+                </div>
+                
+                <div id="visualizer">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+                
+                <audio id="audioPlayer"></audio>
+                
+                <div id="controls">
+                    <button id="prevBtn">Previous</button>
+                    <button id="playPauseBtn">Play</button>
+                    <button id="nextBtn">Next</button>
+                    <button id="downloadBtn">Download</button>
+                </div>
+                
+                <div id="volume-container">
+                    <span>Volume:</span>
+                    <input type="range" id="volume" min="0" max="1" step="0.1" value="0.8" />
+                </div>
+            </div>
         </div>
     </div>
 
@@ -135,8 +340,17 @@
         let allSongs = [];
         let filteredSongs = [];
         let currentTrackIndex = -1;
-        let onlyFiltered = false;
-        let excludeFilters = ["1000+"];
+        let playbackMode = 'all'; // 'all', 'onlyFiltered', 'onlyNotFiltered'
+        let includeFilters = ["1000+"];
+        let excludeFilters = [];
+        let minLength = 0;
+        let maxLength = 9999;
+        let playbackHistory = [];
+        let maxHistory = 100;
+        let audioContext;
+        let analyzer;
+        let bars = [];
+        let animationId;
 
         // DOM elements
         const audioPlayer = document.getElementById('audioPlayer');
@@ -149,7 +363,76 @@
         const volumeSlider = document.getElementById('volume');
         const filtersTextarea = document.getElementById('filters');
         const applyFiltersBtn = document.getElementById('applyFilters');
-        const toggleRandomBtn = document.getElementById('toggleRandom');
+        const onlyFilteredBtn = document.getElementById('onlyFiltered');
+        const onlyNotFilteredBtn = document.getElementById('onlyNotFiltered');
+        const addCurrentPathBtn = document.getElementById('addCurrentPath');
+        const searchPathInput = document.getElementById('searchPath');
+        const searchResultsDiv = document.getElementById('searchResults');
+        const minLengthInput = document.getElementById('minLength');
+        const maxLengthInput = document.getElementById('maxLength');
+        const historyListDiv = document.getElementById('historyList');
+        const visualizer = document.getElementById('visualizer');
+
+        // Initialize visualizer bars
+        function initVisualizer() {
+            bars = Array.from(visualizer.getElementsByClassName('bar'));
+        }
+
+        // Setup audio analyzer for visualizer
+        function setupAudioAnalyzer() {
+            if (audioContext) return;
+            
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyzer = audioContext.createAnalyser();
+                analyzer.fftSize = 256;
+                
+                const source = audioContext.createMediaElementSource(audioPlayer);
+                source.connect(analyzer);
+                analyzer.connect(audioContext.destination);
+                
+                // Start visualization
+                visualize();
+            } catch (e) {
+                console.error('Audio analyzer setup failed:', e);
+            }
+        }
+
+        // Audio visualization
+        function visualize() {
+            if (!analyzer) return;
+            
+            const bufferLength = analyzer.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyzer.getByteFrequencyData(dataArray);
+            
+            // Update bars based on frequency data
+            for (let i = 0; i < bars.length; i++) {
+                const barIndex = Math.floor(i * bufferLength / bars.length);
+                const value = dataArray[barIndex] / 255;
+                const height = Math.max(10, value * 100);
+                bars[i].style.height = `${height}px`;
+                
+                // Color based on intensity
+                const red = Math.floor(100 + value * 155);
+                bars[i].style.backgroundColor = `rgb(${red}, 0, 0)`;
+            }
+            
+            animationId = requestAnimationFrame(visualize);
+        }
+
+        // Stop visualization
+        function stopVisualization() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            // Reset bars
+            bars.forEach(bar => {
+                bar.style.height = '10px';
+                bar.style.backgroundColor = 'var(--links)';
+            });
+        }
 
         // Load songs from the archive
         async function loadSongs() {
@@ -160,7 +443,7 @@
                 
                 statusDiv.textContent = allSongs.length + ' songs loaded!';
                 applyFilters();
-                playRandomSong();
+                initVisualizer();
             } catch (error) {
                 statusDiv.textContent = 'Error loading songs: ' + error.message;
             }
@@ -169,104 +452,624 @@
         // Apply filters to song list
         function applyFilters() {
             const filterText = filtersTextarea.value;
-            excludeFilters = filterText.split('\n').filter(f => f.trim() !== '');
+            includeFilters = filterText.split('\n').filter(f => f.trim() !== '');
+            
+            minLength = parseInt(minLengthInput.value) || 0;
+            maxLength = parseInt(maxLengthInput.value) || 9999;
             
             filteredSongs = allSongs.filter(song => {
-                return !excludeFilters.some(filter => song.includes(filter));
+                // Check if song matches include filters
+                const matchesInclude = includeFilters.length === 0 || 
+                                      includeFilters.some(filter => song.includes(filter));
+                
+                // Check if song matches exclude filters
+                const matchesExclude = excludeFilters.length > 0 && 
+                                      excludeFilters.some(filter => song.includes(filter));
+                
+                return matchesInclude && !matchesExclude;
             });
             
-            statusDiv.textContent = `${allSongs.length} total songs, ${filteredSongs.length} after filtering`;
+            // Further filter by length if we have duration data
+            if (window.songDurations) {
+               Durations) {
+                filteredSongs = filteredSongs = filteredSongs.filter filteredSongs.filter(song(song => {
+                    => {
+                    const duration = window.songD const duration = window.songDurations[song]urations[song] || 0;
+                    return duration >= min || 0;
+                    return duration >= minLengthLength && duration <= maxLength;
+ && duration <= maxLength;
+                });
+            }
+                });
+            }
+            
+            statusDiv.textContent = `${            
+            statusDivallSongs.length} total songs, ${.textContent = `${allSongs.length} total songsfilteredSongs.length} after filtering`;
+        }
+
+        // Play a random song, ${filteredSongs.length} after filtering`;
         }
 
         // Play a random song
+        function play
         function playRandomSong() {
-            const sourceSongs = onlyFiltered && filteredSongs.length > 0 ? filteredSongs : allSongs;
+            letRandomSong() {
+            let sourceSongs;
             
-            if (sourceSongs.length === 0) {
-                statusDiv.textContent = 'No songs available with current filters!';
+ sourceSongs;
+            
+            switch (playbackMode)            switch (playbackMode) {
+                {
+                case 'onlyFiltered':
+                    source case 'onlyFiltered':
+                    sourceSongs = filteredSongsSongs = filtered;
+                   Songs;
+                    break;
+                case 'only break;
+                case 'onlyNotFiltered':
+                    sourceNotFiltered':
+                    sourceSongsSongs = allSongs.filter =(song => 
+                        !includeFilters.some(filter => song allSongs.filter(song => 
+                        !includeFilters.some(filter => song.includes(filter))
+                   .includes(filter))
+                    );
+                    break;
+                default:
+                    );
+                    break;
+                default:
+                    sourceSongs = sourceSongs = allSongs;
+            }
+ allSongs;
+            
+            if (sourceSongs.length            }
+            
+            if ( === 0)sourceSongs.length === 0) {
+ {
+                statusDiv.textContent =                statusDiv.textContent 'No songs available with current filters = 'No songs!';
+                return;
+            available with current filters!';
                 return;
             }
             
+            currentTrackIndex = Math.floor(Math }
+            
             currentTrackIndex = Math.floor(Math.random() * sourceSongs.length);
             const songUrl = sourceSongs[currentTrackIndex];
+.random() * sourceSongs.length);
+            const songUrl = sourceSongs[currentTrackIndex];
+            
+                       
+            // // Add to playback history
+            addToHistory Add to playback history
+            addToHistory(song(songUrl);
+            
+            audioPlayer.srcUrl);
             
             audioPlayer.src = songUrl;
+            update = songUrl;
             updateTrackInfo(songUrl);
-            audioPlayer.play();
-            playPauseBtn.textContent = 'Pause';
+           TrackInfo(songUrl);
+            audioPlayer.play().catch(e => {
+                console.error(' audioPlayer.play().catch(e => {
+                console.error('Playback failed:',Playback failed:', e);
+                statusDiv.text e);
+                statusDiv.textContent = 'Playback error: ' + e.message;
+Content = 'Playback error: ' + e            });
+            playPauseBtn.message;
+            });
+            playPauseBtn.text.textContent = 'Pause';
+            
+           Content = 'Pause // Setup audio analyzer if not already done';
+            
+            // Setup audio analyzer if not already done
+            if
+            if (audio (audioPlayer.src) {
+                setupPlayer.src) {
+                setupAudioAnalyzer();
+            }
+        }
+
+AudioAnalyzer();
+            }
+        // Play a specific song        }
+
+        // Play a specific song from history from history
+        function playFrom
+        function playFromHistory(index) {
+History(index) {
+            if (index <             if (index < 0 || index >=0 || index >= playbackHistory.length) return;
+ playbackHistory.length) return;
+            
+            const            
+            songUrl = playbackHistory[index];
+            currentTrackIndex = allSongs.indexOf(songUrl);
+ const songUrl = playbackHistory[index];
+            currentTrackIndex = allSongs.indexOf(songUrl);
+            
+            
+            if (currentTrackIndex === -            if (currentTrack1) {
+                statusDiv.textContent = 'SongIndex === -1) {
+                statusDiv.textContent = 'Song not not found in library!';
+                return;
+            found in library!';
+                return;
+            }
+            
+            audioPlayer.src = song }
+            
+            audioPlayer.src = songUrl;
+            updateTrackInfoUrl;
+            update(songUrl);
+            audioTrackInfo(songUrl);
+            audioPlayer.playPlayer.play();
+            playPauseBtn.text();
+            playPauseBtn.textContent = 'Content = 'Pause';
+            
+            // Setup audio analyzer if not alreadyPause';
+            
+            // done
+            if (audioPlayer.src Setup audio analyzer if not already done
+            if (audioPlayer.src) {
+                setupAudioAnalyzer();
+            }
+) {
+                setupAudioAnalyzer();
+        }
+
+        //            }
+        }
+
+        // Add song to playback Add song to playback history
+        function addToHistory history
+        function add(songUrl) {
+            // RemoveToHistory(songUrl) {
+            // Remove if already in if already in history
+            const history
+            const existingIndex = playbackHistory.indexOf(songUrl);
+            existingIndex = playbackHistory.indexOf(songUrl);
+            if (existing if (existingIndex !== -1)Index !== -1) {
+                playback {
+                playbackHistoryHistory.splice(ex.splice(existingIndex, 1);
+istingIndex, 1);
+            }
+            }
+            
+            // Add to beginning
+                       
+            // Add to beginning
+            playback playbackHistory.unshift(songUrl);
+            
+            // Trim if too long
+            if (playbackHistory.unshift(songUrl);
+            
+            // Trim if too long
+            if (playbackHistory.length > maxHistory)History.length > maxHistory) {
+                playbackHistory.pop {
+                playbackHistory.pop();
+();
+            }
+            
+                       }
+            
+            updateHistoryDisplay();
+        }
+
+        // updateHistoryDisplay();
+ Update history display
+        function updateHistoryDisplay() {
+        }
+
+        // Update history display
+        function updateHistoryDisplay() {
+                       if (playbackHistory if (playbackHistory.length === 0) {
+                historyListDiv.innerHTML.length === 0) {
+                historyList = 'No history yet';
+                returnDiv.innerHTML = 'No history yet';
+                return;
+            }
+            
+            historyListDiv.innerHTML = '';
+            playbackHistory;
+            }
+            
+            historyListDiv.innerHTML =.forEach((song, index) '';
+            playbackHistory.forEach((song, index) => {
+                const fileName = song.split('/').pop();
+ => {
+                const fileName = song.split('/').                const div = document.createElement('div');
+                div.textpop();
+                const div = document.createElement('div');
+                div.textContent = `${index + 1}.Content = `${index + ${fileName}`;
+ 1}. ${fileName                div.style.cursor = 'pointer';
+                div.style}`;
+                div.style.cursor = 'pointer';
+                div.style.margin = '.margin = '2px 0';
+2px 0';
+                div.style.padding = '2px';
+                div                div.style.padding = '2px';
+                div.style.b.style.borderBottom =orderBottom = '1px solid var(--borders '1px solid var(--borders)';
+                div.on)';
+                div.onclick = () => playclick = () => playFromHistory(index);
+                div.onFromHistory(index);
+                div.onmouseovermouseover = () => div = () => div.style.backgroundColor = '#330000.style.backgroundColor = '#330000';
+';
+                               div.onmouseout = () => div div.onmouseout = () => div.style.backgroundColor = 'transparent';
+.style.backgroundColor = 'transparent';
+                historyListDiv.appendChild(div                historyListDiv.appendChild(div);
+            });
         }
 
         // Update track info display
-        function updateTrackInfo(url) {
+       );
+            });
+        }
+
+        // Update track info display
+        function updateTrack function updateTrackInfo(urlInfo(url) {
             const fileName = url.split('/').pop();
-            const pathParts = url.split('/');
-            const album = pathParts[pathParts.length - 2];
+            const) {
+            const fileName = url.split('/').pop();
+            const path pathParts = url.split('/');
+            constParts = url.split('/');
+            const album = path album = pathParts[pathParts.length - 2Parts[pathParts];
+            
+            track.length - 2];
             
             trackInfoDiv.innerHTML = `
-                <div class="marquee">
+               InfoDiv.innerHTML = `
+                <div class="mar <div class="marqueequee">
+                    <span>Now Playing: ${fileName} (">
                     <span>Now Playing: ${fileName} (from: ${album})</span>
+from: ${album})</span>
                 </div>
-            `;
+                </div>
+                       `;
+        }
+
+        // Search for paths
+ `;
+        }
+
+        // Search for paths        function searchPaths(query
+        function searchPaths(query) {
+           ) {
+            if (!query if (!query) {
+                searchResults) {
+                searchResultsDiv.style.display = 'none';
+                return;
+            }
+Div.style.display = 'none';
+                return;
+            }
+            
+            const results =            
+            const results = [];
+            const unique [];
+            const uniquePaths = new Set();
+            
+            // SearchPaths = new Set();
+            
+            // Search through all songs for matching paths
+ through all songs for matching paths
+            all            allSongs.forEach(sSongs.forEach(song => {
+               ong => {
+                const paths = song.split('/');
+                const paths = song.split('/');
+                for (let i =  for (let i = 0; i0; i < paths.length - 1; i++) < paths.length - 1; {
+                    const path = paths i++) {
+                   [i];
+                    if (path.toLowerCase().includes const path = paths[i];
+                    if (path(query.toLowerCase()).toLowerCase().includes(query.toLowerCase()) && !uniquePaths && !uniquePaths.has(path)) {
+                        uniquePaths.add(path);
+.has(path)) {
+                        unique                        results.push(path);
+                    }
+                }
+           Paths.add(path);
+                        results.push(path);
+                    });
+            
+            // Display results
+ }
+                }
+            });
+            
+            // Display results
+            searchResultsDiv.innerHTML            searchResultsDiv.innerHTML = '';
+            if (results = '';
+            if (results.length ===.length === 0) {
+                const noResult = document.createElement 0) {
+                const noResult = document.createElement('div');
+('div');
+                noResult.className = 'search-result                noResult.className = 'search-result';
+                no';
+                noResult.textContent = 'NoResult.textContent = 'No results found';
+                search results found';
+                searchResultsDiv.appendChild(noResult);
+            } else {
+               ResultsDiv.appendChild(noResult);
+            } else {
+                results.slice(0,  results.slice(0, 10).forEach(result => {
+                    const resultDiv = document10).forEach(result => {
+                    const resultDiv = document.createElement('.createElement('div');
+                    resultDiv.className =div');
+                    resultDiv.className = 'search-result';
+                    result 'search-result';
+                    resultDiv.textContent = result;
+Div.textContent = result;
+                    resultDiv.onclick = () =>                    resultDiv.onclick = () => {
+                        {
+                        filtersTextarea.value += ( filtersTextarea.valuefiltersTextarea.value ? '\n' : += (filtersTextarea.value ? '\n '') + result;
+                        searchResultsDiv' : '') + result;
+                        searchResultsDiv.style.display = 'none';
+                        searchPath.style.display = 'none';
+                        searchPathInput.valueInput.value = '';
+                    };
+                    searchResults = '';
+                    };
+                    searchResultsDiv.appendChild(resultDiv.appendChild(resultDiv);
+Div);
+                });
+            }
+            
+                           });
+            }
+            
+ searchResultsDiv.style.display            searchResultsDiv.style.display = 'block';
+        }
+
+        // Download = 'block';
         }
 
         // Download current track
-        function downloadCurrentTrack() {
-            if (currentTrackIndex === -1) return;
+        function download current track
+       CurrentTrack() {
+ function downloadCurrentTrack() {
+            if (current            if (currentTrackIndex === -1TrackIndex === -1) return;
             
-            const sourceSongs = onlyFiltered && filteredSongs.length > 0 ? filteredSongs : allSongs;
-            const songUrl = sourceSongs[currentTrackIndex];
+           ) return;
+            
+            const songUrl = allSongs[current const songUrl = allTrackIndex];
+            const fileName = songSongs[currentTrackIndex];
             const fileName = songUrl.split('/').pop();
             
-            const a = document.createElement('a');
+           Url.split('/').pop();
+            
+            const a const a = document.createElement('a');
+            a.href = document.createElement('a');
             a.href = songUrl;
+            a.download = songUrl;
             a.download = fileName;
+            document.body = fileName;
             document.body.appendChild(a);
+            a.click.appendChild(a);
             a.click();
             document.body.removeChild(a);
         }
 
+();
+            document.body.removeChild(a);
+               // Add current folder to filters
+ }
+
+        // Add current folder to filters
+        function add        function addCurrentFolderToCurrentFolderToFilters() {
+            if (Filters() {
+            if (currentTrackIndex === -1) return;
+            
+           currentTrackIndex === -1) return;
+            
+            const songUrl = allS const songUrl =ongs[currentTrackIndex];
+            const paths = songUrl.split('/');
+ allSongs[currentTrackIndex];
+            const            if (paths.length > 1) {
+                const folder = paths = songUrl.split('/');
+            if (paths.length > 1) {
+                const folder = paths[paths.length paths[paths.length - 2];
+                if - 2];
+                if (!includeFilters.includes (!includeFilters(folder)) {
+                    filtersTextarea.value += (filtersText.includes(folder)) {
+                    filtersTextarea.value += (filtersTextarea.value ? '\n' : '') +area.value ? '\n' : ' folder;
+                    applyFilters();
+                }
+           ') + folder;
+                    applyFilters();
+                }
+            }
+ }
+        }
+
         // Event listeners
-        playPauseBtn.addEventListener('click', () => {
-            if (audioPlayer.paused) {
+        playPause        }
+
+        // Event listeners
+        playPauseBtn.addEventListener('Btn.addEventListener('click', () => {
+           click', () => {
+            if (audioPlayer.paused if (audioPlayer.paused) {
+                if) {
                 if (!audioPlayer.src) {
                     playRandomSong();
+                (!audioPlayer.src) {
+                    playRandom } else {
+                    audioPlayerSong();
                 } else {
                     audioPlayer.play();
+                    playPauseBtn.textContent = 'P.play();
                     playPauseBtn.textContent = 'Pause';
+                    if (audioPlayer.src) {
+                        setupAudioAnalyzer();
+ause';
+                    if (audioPlayer.src) {
+                        setupAudioAnaly                    }
+                }
+            } else {
+zer();
+                    }
                 }
             } else {
                 audioPlayer.pause();
-                playPauseBtn.textContent = 'Play';
+                playPause                audioPlayer.pause();
+                playPauseBtnBtn.textContent = 'Play';
+                stopVisualization();
+.textContent = 'Play';
+                stopVisualization();
             }
         });
 
-        nextBtn.addEventListener('click', playRandomSong);
+        nextBtn.addEventListener            }
+        });
+
+        nextBtn.addEventListener('('click', playRandomSong);
         
-        prevBtn.addEventListener('click', () => {
-            // For true randomness, just play another random song
-            playRandomSong();
+        prevclick', playRandomSong);
+        
+        prevBtn.addEventListener('clickBtn.addEventListener('click', () => {
+            if (play', () => {
+            if (playbackHistory.length > 1backHistory.length > 1) {
+                // Play the) {
+                // Play previous song in history (skip current)
+                the previous song in history (skip current)
+                playFromHistory playFromHistory(1);
+            } else(1);
+            } else {
+                playRandom {
+                playRandomSong();
+Song();
+                       }
+        });
+
+        downloadBtn.addEventListener(' }
         });
 
         downloadBtn.addEventListener('click', downloadCurrentTrack);
 
         volumeSlider.addEventListener('input', () => {
+            audioPlayerclick', downloadCurrentTrack);
+
+        volumeSlider.volume = volumeSlider.value;
+        });
+
+        applyFiltersBtn.addEventListener('click', apply.addEventListener('input', () => {
             audioPlayer.volume = volumeSlider.value;
         });
 
-        applyFiltersBtn.addEventListener('click', applyFilters);
+        applyFiltersFilters);
 
-        toggleRandomBtn.addEventListener('click', () => {
-            onlyFiltered = !onlyFiltered;
-            toggleRandomBtn.textContent = onlyFiltered ? 'Only Play Filtered' : 'Play All Random';
-            statusDiv.textContent = onlyFiltered ? 
-                `Playing only from ${filteredSongs.length} filtered songs` : 
-                `Playing from all ${allSongs.length} songs`;
+        onlyFilteredBtn.addEventListenerBtn.addEventListener('click', applyFilters);
+
+        onlyFilteredBtn.addEventListener('click('click', () => {
+            playbackMode = 'only', () => {
+            playbackMode = 'onlyFiltered';
+           Filtered';
+            statusDiv.textContent = `Playing only statusDiv.textContent = `Playing only from ${filteredSongs.length} from ${filteredSongs.length} included songs`;
+            playRandom included songs`;
+           Song();
         });
 
+        onlyNotFilteredBtn.addEventListener(' playRandomSong();
+        });
+
+        onlyNotFilteredBtn.addEventListener('click', () =>click', () => {
+            playbackMode = 'onlyNot {
+            playbackMode = 'onlyNotFilteredFiltered';
+            const notFiltered';
+            const notFilteredSongs = allSongs.filter(song => 
+Songs = allSongs.filter(song => 
+                !include                !includeFilters.some(filterFilters.some(filter => song.includes(filter))
+            );
+            statusDiv.textContent = `Playing only from ${notFiltered => song.includes(filter))
+            );
+            statusDiv.textContent = `Playing only from ${notFilteredSongs.length} nonSongs.length} non-included songs`;
+            playRandomSong();
+       -included songs`;
+            playRandomSong();
+        });
+
+        addCurrentPathBtn.addEventListener(' });
+
+        addCurrentPathBtn.addEventListener('click', addCurrentFolderToFiltersclick', addCurrentFolderToFilters);
+
+        searchPathInput.addEventListener(');
+
+        searchPathInputinput', () => {
+            searchPaths.addEventListener('input', () => {
+            searchPaths(searchPathInput.value);
+       (searchPathInput.value);
+        });
+
+        });
+
+        document.addEventListener('click', ( document.addEventListener('click', (e) =>e) => {
+            if {
+            if (!searchResultsDiv.contains(e (!searchResultsDiv.contains(e.target) && e.target !== searchPathInput) {
+               .target) && e.target !== searchPathInput) {
+                searchResults searchResultsDiv.style.display = 'none';
+            }
+       Div.style.display = 'none';
+            }
+        });
+
+        });
+
+        minLengthInput.addEventListener('change', applyFilters);
+        maxLengthInput.addEventListener('change', applyFilters minLengthInput.addEventListener('change', applyFilters);
+        maxLengthInput.addEventListener('change', applyFilters);
+
         audioPlayer.addEventListener('ended', playRandomSong);
+        
+        audioPlayer.addEventListener(');
+
+        audioPlayer.addEventListener('ended', playRandomSong);
+        
+        audioPlayer.addEventListener('play', ()play', () => {
+            if (audio => {
+            if (audioPlayer.src) {
+                setupAudioAnalyzerPlayer.src) {
+                setupAudioAnalyzer();
+           ();
+            }
+ }
+        });
+        
+        audioPlayer.addEventListener('pause', () => {
+            stopVisualization        });
+        
+        audioPlayer.addEventListener('pause',();
+        });
 
         // Initialize player
         loadSongs();
+        
+        // Initialize () => {
+            stopVisualization();
+        });
+
+ snowflakes
+        function initSnowflakes        // Initialize player
+        loadSongs();
+        
+        // Initialize snowflakes
+        function initSnowflakes()() {
+ {
+            const snowflakes =            const snowflakes = document.querySelectorAll('.snowflake');
+            snow document.querySelectorAll('.snowflake');
+            snowflakesflakes.forEach((flake, index).forEach((flake, index => {
+                flake.style.left = `${Math.random()) => {
+                flake.style.left = `${Math.random() *  * 100}%`;
+                flake.style100}%`;
+.animationDelay = `${Math.random() * 10}s, ${                flake.style.animationDelay = `${Math.random() * 10}sMath.random() * , ${Math.random() * 3}s`;
+            });
+        }
+        
+3}s`;
+            });
+        }
+        
+        initSnowflakes        initSnowflakes();
+    </script>
+</body>
+</html();
     </script>
 </body>
 </html>
