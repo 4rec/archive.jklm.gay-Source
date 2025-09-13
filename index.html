@@ -1,0 +1,272 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>ArchiveJKLM - Random Audio Player</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style type="text/css">
+        body {
+            background-color: #000000;
+            color: #CCCCCC;
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAB2SURBVHja7M4xDQAgDAAxwMedoPofCqkIyoC6MEHXJsmTzLkAwwJYEVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZVuLZQEAwxcQlOcAAAAASUVORK5CYII=');
+        }
+        #container {
+            width: 800px;
+            margin: 0 auto;
+            border: 1px solid #FF0000;
+            background-color: #111111;
+            padding: 20px;
+        }
+        h1 {
+            color: #FF0000;
+            font-size: 28px;
+            text-align: center;
+            text-shadow: 0 0 5px #FF0000;
+        }
+        #status {
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #220000;
+            border: 1px solid #FF0000;
+        }
+        #player {
+            width: 400px;
+            margin: 0 auto;
+            padding: 10px;
+            background-color: #222222;
+            border: 2px solid #FF0000;
+        }
+        #controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #330000;
+            color: #FFCCCC;
+            border: 1px solid #FF0000;
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #550000;
+        }
+        #trackInfo {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+            height: 40px;
+            overflow: hidden;
+        }
+        #options {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #220000;
+            border: 1px solid #FF0000;
+        }
+        #options h3 {
+            color: #FF0000;
+            margin-top: 0;
+        }
+        #filters {
+            width: 100%;
+            height: 100px;
+            background-color: #111111;
+            color: #CCCCCC;
+            border: 1px solid #FF0000;
+        }
+        .marquee {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+        .marquee span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+        }
+        @keyframes marquee {
+            0%   { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+        #volume {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>ArchiveJKLM Audio Player</h1>
+        
+        <div id="status">Loading songs...</div>
+        
+        <div id="player">
+            <div id="trackInfo">
+                <div class="marquee"><span>No track selected</span></div>
+            </div>
+            <audio id="audioPlayer" controls style="width: 100%;"></audio>
+            <div id="controls">
+                <button id="prevBtn">Previous</button>
+                <button id="playPauseBtn">Play</button>
+                <button id="nextBtn">Next</button>
+                <button id="downloadBtn">Download</button>
+            </div>
+            <div>
+                <label for="volume">Volume:</label>
+                <input type="range" id="volume" min="0" max="1" step="0.1" value="0.8">
+            </div>
+        </div>
+        
+        <div id="options">
+            <h3>Filter Options</h3>
+            <p>Exclude paths (one per line):</p>
+            <textarea id="filters">1000+</textarea>
+            <button id="applyFilters">Apply Filters</button>
+            <button id="toggleRandom">Only Play Filtered</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // Global variables
+        let allSongs = [];
+        let filteredSongs = [];
+        let currentTrackIndex = -1;
+        let onlyFiltered = false;
+        let excludeFilters = ["1000+"];
+
+        // DOM elements
+        const audioPlayer = document.getElementById('audioPlayer');
+        const statusDiv = document.getElementById('status');
+        const trackInfoDiv = document.getElementById('trackInfo');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const volumeSlider = document.getElementById('volume');
+        const filtersTextarea = document.getElementById('filters');
+        const applyFiltersBtn = document.getElementById('applyFilters');
+        const toggleRandomBtn = document.getElementById('toggleRandom');
+
+        // Load songs from the archive
+        async function loadSongs() {
+            try {
+                const response = await fetch('https://archive.jklm.gay/archive.txt');
+                const text = await response.text();
+                allSongs = text.split('\n').filter(url => url.trim() !== '');
+                
+                statusDiv.textContent = allSongs.length + ' songs loaded!';
+                applyFilters();
+                playRandomSong();
+            } catch (error) {
+                statusDiv.textContent = 'Error loading songs: ' + error.message;
+            }
+        }
+
+        // Apply filters to song list
+        function applyFilters() {
+            const filterText = filtersTextarea.value;
+            excludeFilters = filterText.split('\n').filter(f => f.trim() !== '');
+            
+            filteredSongs = allSongs.filter(song => {
+                return !excludeFilters.some(filter => song.includes(filter));
+            });
+            
+            statusDiv.textContent = `${allSongs.length} total songs, ${filteredSongs.length} after filtering`;
+        }
+
+        // Play a random song
+        function playRandomSong() {
+            const sourceSongs = onlyFiltered && filteredSongs.length > 0 ? filteredSongs : allSongs;
+            
+            if (sourceSongs.length === 0) {
+                statusDiv.textContent = 'No songs available with current filters!';
+                return;
+            }
+            
+            currentTrackIndex = Math.floor(Math.random() * sourceSongs.length);
+            const songUrl = sourceSongs[currentTrackIndex];
+            
+            audioPlayer.src = songUrl;
+            updateTrackInfo(songUrl);
+            audioPlayer.play();
+            playPauseBtn.textContent = 'Pause';
+        }
+
+        // Update track info display
+        function updateTrackInfo(url) {
+            const fileName = url.split('/').pop();
+            const pathParts = url.split('/');
+            const album = pathParts[pathParts.length - 2];
+            
+            trackInfoDiv.innerHTML = `
+                <div class="marquee">
+                    <span>Now Playing: ${fileName} (from: ${album})</span>
+                </div>
+            `;
+        }
+
+        // Download current track
+        function downloadCurrentTrack() {
+            if (currentTrackIndex === -1) return;
+            
+            const sourceSongs = onlyFiltered && filteredSongs.length > 0 ? filteredSongs : allSongs;
+            const songUrl = sourceSongs[currentTrackIndex];
+            const fileName = songUrl.split('/').pop();
+            
+            const a = document.createElement('a');
+            a.href = songUrl;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Event listeners
+        playPauseBtn.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                if (!audioPlayer.src) {
+                    playRandomSong();
+                } else {
+                    audioPlayer.play();
+                    playPauseBtn.textContent = 'Pause';
+                }
+            } else {
+                audioPlayer.pause();
+                playPauseBtn.textContent = 'Play';
+            }
+        });
+
+        nextBtn.addEventListener('click', playRandomSong);
+        
+        prevBtn.addEventListener('click', () => {
+            // For true randomness, just play another random song
+            playRandomSong();
+        });
+
+        downloadBtn.addEventListener('click', downloadCurrentTrack);
+
+        volumeSlider.addEventListener('input', () => {
+            audioPlayer.volume = volumeSlider.value;
+        });
+
+        applyFiltersBtn.addEventListener('click', applyFilters);
+
+        toggleRandomBtn.addEventListener('click', () => {
+            onlyFiltered = !onlyFiltered;
+            toggleRandomBtn.textContent = onlyFiltered ? 'Only Play Filtered' : 'Play All Random';
+            statusDiv.textContent = onlyFiltered ? 
+                `Playing only from ${filteredSongs.length} filtered songs` : 
+                `Playing from all ${allSongs.length} songs`;
+        });
+
+        audioPlayer.addEventListener('ended', playRandomSong);
+
+        // Initialize player
+        loadSongs();
+    </script>
+</body>
+</html>
